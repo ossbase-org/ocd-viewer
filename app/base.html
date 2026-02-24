@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCD Explorer | Open Contributions Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .ocd-card:hover .copy-btn {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900 overflow-x-hidden">
+
+    <div id="uploadArea" class="max-w-4xl mx-auto mt-20 p-8">
+        <div
+            class="bg-white border-2 border-dashed border-blue-400 rounded-3xl p-16 text-center shadow-2xl transition-all hover:border-blue-600">
+            <div class="bg-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3">
+                <i class="fas fa-certificate text-4xl text-white"></i>
+            </div>
+            <h2 class="text-3xl font-bold mb-4 text-slate-800">OCD Visualizer</h2>
+            <p class="text-slate-500 mb-8 text-lg max-w-md mx-auto">
+                Drop your <span class="font-mono text-blue-600">open-contributions.json</span> here to explore your
+                organization's open ecosystem.
+            </p>
+            <input type="file" id="fileInput" accept=".json" class="hidden">
+            <button onclick="document.getElementById('fileInput').click()"
+                class="bg-slate-900 hover:bg-black text-white font-bold py-4 px-12 rounded-2xl transition-all shadow-lg flex items-center gap-3 mx-auto">
+                <i class="fas fa-folder-open"></i> Load OCD File
+            </button>
+        </div>
+    </div>
+
+    <div id="mainContent" class="hidden">
+        <header class="bg-slate-900 text-white py-10 px-8 shadow-2xl sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center gap-6">
+                    <div id="orgLogoPlaceholder"
+                        class="bg-blue-500 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg">
+                        OCD
+                    </div>
+                    <div>
+                        <h1 id="headerTitle" class="text-3xl font-black tracking-tight uppercase">Organization Name</h1>
+                        <p id="headerSubtitle" class="text-blue-400 text-sm font-medium mt-1 italic"></p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-3 justify-center" id="headerLinks"></div>
+                <button onclick="location.reload()"
+                    class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition text-xs font-bold border border-white/10">
+                    <i class="fas fa-upload mr-2"></i> Change File
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto py-12 px-6">
+            <div class="flex flex-col lg:flex-row gap-6 justify-between items-center mb-12">
+                <div class="relative w-full lg:w-96">
+                    <input type="text" id="searchInput" placeholder="Search projects, datasets, standards..."
+                        class="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <i class="fas fa-search absolute left-4 top-4.5 text-slate-400"></i>
+                </div>
+
+                <div id="categoryFilters" class="flex gap-2 bg-gray-200/50 p-1.5 rounded-2xl">
+                    <button onclick="filterType('all')"
+                        class="filter-btn active bg-white text-slate-900 px-6 py-2 rounded-xl text-sm font-bold shadow-sm transition-all">All</button>
+                    <button onclick="filterType('projects')"
+                        class="filter-btn hover:bg-white/50 px-6 py-2 rounded-xl text-sm font-bold transition-all text-slate-500">Software</button>
+                    <button onclick="filterType('data')"
+                        class="filter-btn hover:bg-white/50 px-6 py-2 rounded-xl text-sm font-bold transition-all text-slate-500">Data</button>
+                    <button onclick="filterType('standards')"
+                        class="filter-btn hover:bg-white/50 px-6 py-2 rounded-xl text-sm font-bold transition-all text-slate-500">Standards</button>
+                </div>
+            </div>
+
+            <div id="dataGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </main>
+    </div>
+
+    <div id="sidePanel"
+        class="fixed inset-y-0 right-0 w-full md:w-[650px] bg-white shadow-[-30px_0_60px_rgba(0,0,0,0.2)] z-50 translate-x-full transition-transform duration-500 flex flex-col">
+        <div class="p-8 bg-slate-900 text-white flex justify-between items-center">
+            <div>
+                <h2 id="panelType" class="text-blue-400 text-[10px] font-black uppercase tracking-[0.2em]">Category</h2>
+                <h3 id="panelTitle" class="text-xl font-bold">Item Title</h3>
+            </div>
+            <button onclick="closePanel()"
+                class="bg-white/10 hover:bg-red-500 w-12 h-12 rounded-full transition-all text-2xl flex items-center justify-center">&times;</button>
+        </div>
+        <div id="panelContent" class="p-10 overflow-y-auto custom-scrollbar flex-grow bg-white">
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const mainContent = document.getElementById('mainContent');
+        const grid = document.getElementById('dataGrid');
+        const searchInput = document.getElementById('searchInput');
+        const sidePanel = document.getElementById('sidePanel');
+
+        let allData = { projects: [], data: [], standards: [] };
+        let currentFilter = 'all';
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const ocd = JSON.parse(event.target.result);
+                    processOCD(ocd);
+                } catch (err) { alert("Error: This is not a valid OCD JSON file."); }
+            };
+            reader.readAsText(file);
+        });
+
+        function processOCD(ocd) {
+            // Header Org Info
+            document.getElementById('headerTitle').textContent = ocd.organization?.name || "Organization";
+            document.getElementById('headerSubtitle').textContent = ocd.organization?.description || ocd.organization?.domain || "";
+
+            // Org Links
+            const linkBox = document.getElementById('headerLinks');
+            linkBox.innerHTML = '';
+            if (ocd.organization?.links) {
+                Object.entries(ocd.organization.links).forEach(([key, url]) => {
+                    linkBox.innerHTML += `<a href="${url}" target="_blank" class="bg-white/10 hover:bg-blue-500 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-white/5 uppercase">${key.replace('_', ' ')}</a>`;
+                });
+            }
+
+            // Organize Data types as per OCD spec
+            allData.projects = ocd.projects || [];
+            allData.data = ocd.open_data || [];
+            allData.standards = ocd.open_standards || [];
+
+            uploadArea.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            renderCards();
+        }
+
+        function filterType(type) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+                btn.classList.add('text-slate-500');
+            });
+            event.target.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+            renderCards();
+        }
+
+        function renderCards() {
+            grid.innerHTML = '';
+            let itemsToDisplay = [];
+
+            if (currentFilter === 'all') itemsToDisplay = [...allData.projects.map(i => ({ ...i, _type: 'Project' })), ...allData.data.map(i => ({ ...i, _type: 'Dataset' })), ...allData.standards.map(i => ({ ...i, _type: 'Standard' }))];
+            else if (currentFilter === 'projects') itemsToDisplay = allData.projects.map(i => ({ ...i, _type: 'Project' }));
+            else if (currentFilter === 'data') itemsToDisplay = allData.data.map(i => ({ ...i, _type: 'Dataset' }));
+            else if (currentFilter === 'standards') itemsToDisplay = allData.standards.map(i => ({ ...i, _type: 'Standard' }));
+
+            // Apply search
+            const term = searchInput.value.toLowerCase();
+            itemsToDisplay = itemsToDisplay.filter(i => JSON.stringify(i).toLowerCase().includes(term));
+
+            itemsToDisplay.forEach(item => {
+                const title = item.name || item.title || "Untitled";
+                const desc = item.description || "No description provided.";
+
+                const card = document.createElement('div');
+                card.className = "ocd-card bg-white rounded-[2.5rem] border border-gray-100 p-10 hover:border-blue-500 hover:shadow-2xl transition-all cursor-pointer flex flex-col justify-between group";
+                card.onclick = () => openPanel(item);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-3 py-1 rounded-full">${item._type}</span>
+                            <i class="fas ${item.status === 'archived' ? 'fa-archive text-amber-500' : 'fa-check-circle text-emerald-500'} text-xs"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4 group-hover:text-blue-600 transition-colors">${title}</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed line-clamp-3 mb-8">${desc}</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-6 border-t border-gray-50">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Click to explore</span>
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function formatValue(val) {
+            if (!val) return '<span class="text-slate-300">N/A</span>';
+
+            if (typeof val === 'string' && (val.startsWith('http') || val.startsWith('www'))) {
+                return `
+                    <div class="flex items-center gap-2 group/link">
+                        <a href="${val}" target="_blank" class="text-blue-600 hover:underline font-mono text-sm truncate">${val}</a>
+                        <button onclick="event.stopPropagation(); navigator.clipboard.writeText('${val}'); alert('Link copied!')" class="text-slate-300 hover:text-blue-500 transition-colors">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>`;
+            }
+
+            if (Array.isArray(val)) {
+                return `<div class="flex flex-wrap gap-2 mt-2">${val.map(v => `<span class="bg-slate-100 px-3 py-1 rounded-lg text-xs font-bold text-slate-600 border border-slate-200">${typeof v === 'object' ? 'Nested Info' : v}</span>`).join('')}</div>`;
+            }
+
+            if (typeof val === 'object') {
+                let html = '<div class="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">';
+                for (const [k, v] of Object.entries(val)) {
+                    html += `<div><label class="text-[9px] font-black text-slate-400 uppercase block mb-1">${k.replace(/_/g, ' ')}</label><div class="text-slate-800">${formatValue(v)}</div></div>`;
+                }
+                html += '</div>';
+                return html;
+            }
+
+            return `<span class="text-slate-700">${val}</span>`;
+        }
+
+        function openPanel(item) {
+            document.getElementById('panelType').textContent = item._type;
+            document.getElementById('panelTitle').textContent = item.name || item.title;
+
+            const panelContent = document.getElementById('panelContent');
+            panelContent.innerHTML = '';
+
+            Object.entries(item).forEach(([key, value]) => {
+                if (key.startsWith('_')) return;
+                const label = key.replace(/_/g, ' ').toUpperCase();
+                panelContent.innerHTML += `
+                    <div class="mb-10 animate-fade-in">
+                        <label class="text-blue-600 font-black text-[10px] tracking-widest block mb-3 uppercase border-b border-blue-50 pb-2">${label}</label>
+                        <div class="text-base">${formatValue(value)}</div>
+                    </div>`;
+            });
+
+            sidePanel.classList.remove('translate-x-full');
+        }
+
+        function closePanel() { sidePanel.classList.add('translate-x-full'); }
+
+        searchInput.addEventListener('input', renderCards);
+    </script>
+</body>
+
+</html>
