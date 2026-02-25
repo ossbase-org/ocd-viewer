@@ -68,4 +68,3 @@ Static HTML Output
 
 The system is designed to remain flexible and adaptable.
 
----
