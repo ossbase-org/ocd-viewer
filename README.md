@@ -4,8 +4,6 @@ A simple and flexible static site generator that creates HTML websites from stru
 
 This tool transforms machine-readable metadata into a clean, human-readable website.
 
----
-
 ## Purpose
 
 The goal of this project is to:
@@ -16,8 +14,6 @@ The goal of this project is to:
 - Provide a transparent and automated view of organizational openness
 
 The output is a deployable static website (no backend required).
-
----
 
 ## Supported Input Sources
 
@@ -42,8 +38,6 @@ Multiple repositories can be combined into one generated site.
 The generator can connect to an  
 `.well-known/open-contributions.json` endpoint and automatically build a public website from it.
 
----
-
 ## How It Works
 
 Input Sources (JSON / GitHub / OCD)
@@ -56,8 +50,6 @@ Template Engine
 ↓
 Static HTML Output
 
----
-
 ## What the Generated Website Can Include
 
 - Organization overview page
@@ -66,8 +58,6 @@ Static HTML Output
 - Standards participation overview
 - Links to repositories and documentation
 - Machine-readable interface references
-
----
 
 ## Extensibility
 
