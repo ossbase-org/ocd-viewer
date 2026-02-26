@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCD Explorer | Open Contributions Viewer</title>
+    <title>Open Contributions Descriptor Explorer | Open Contributions Viewer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css" />
@@ -18,7 +18,8 @@
                 <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ">
                     <img src="images/logo_ocd_viewer.png" alt="Logo" class="w-16 h-16 mb-2">
                 </div>
-                <h2 class="text-3xl font-bold mb-4 text-slate-800">OCD <span class="text-blue-600">VISUALIZER</span>
+                <h2 class="text-3xl font-bold mb-4 text-slate-800">Open Contributions Descriptor <span
+                        class="text-blue-600">VISUALIZER</span>
                 </h2>
                 <p class="text-slate-500 mb-8 text-lg max-w-md mx-auto">
                     Drop your <span class="font-mono text-blue-600">open-contributions.json</span> here to explore your
@@ -26,15 +27,56 @@
                 </p>
                 <input type="file" id="fileInput" accept=".json" class="hidden">
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onclick="document.getElementById('fileInput').click()"
-                        class="bg-slate-900 hover:bg-black text-white font-bold py-4 px-12 rounded-2xl transition-all shadow-lg flex items-center gap-3">
-                        <i class="fas fa-folder-open"></i> Load OCD File
-                    </button>
-                    <a href="factory.html"
-                        class="bg-blue-50 text-blue-600 font-bold py-4 px-12 rounded-2xl border border-blue-100 hover:bg-blue-100 transition-all flex items-center justify-center gap-2">
-                        <i class="fas fa-plus-circle"></i> Create New
-                    </a>
+                <div class="flex flex-col gap-4 justify-center items-center">
+                    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                        <button onclick="document.getElementById('fileInput').click()"
+                            class="bg-slate-900 hover:bg-black text-white font-bold py-4 px-10 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3 flex-1">
+                            <i class="fas fa-folder-open"></i> Load File
+                        </button>
+
+                        <button onclick="toggleUrlCollapse()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3 flex-1">
+                            <i class="fas fa-link"></i> Remote URL
+                        </button>
+
+                        <a href="factory.html"
+                            class="bg-white text-blue-600 font-bold py-4 px-10 rounded-2xl border-2 border-blue-100 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 flex-1">
+                            <i class="fas fa-plus-circle"></i> Create New
+                        </a>
+                    </div>
+
+                    <div id="urlCollapse"
+                        class="hidden w-full max-w-xl mt-4 overflow-hidden transition-all duration-300">
+                        <div class="bg-slate-100 p-6 rounded-3xl border border-slate-200 flex flex-col gap-3">
+                            <label
+                                class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">8.
+                                Remote JSON Endpoint</label>
+
+                            <div class="flex gap-2">
+                                <input type="text" id="remoteUrlInput"
+                                    placeholder="https://example.org/.well-known/open-contributions.json"
+                                    class="flex-grow p-4 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-inner">
+                                <button onclick="fetchRemoteData()"
+                                    class="bg-blue-600 text-white px-6 rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                    Fetch <i class="fas fa-arrow-right text-xs"></i>
+                                </button>
+                            </div>
+
+                            <div id="urlError"
+                                class="hidden animate-fadeIn mt-2 flex items-start gap-3 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600">
+                                <i class="fas fa-exclamation-circle mt-0.5"></i>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-black uppercase">Import Error</span>
+                                    <span id="urlErrorText" class="text-xs font-medium">Something went wrong.</span>
+                                </div>
+                            </div>
+
+                            <p class="text-[10px] text-slate-400 mt-1 italic text-left ml-2">
+                                Target must be a <span class="text-blue-500">.json</span> file or a <span
+                                    class="text-blue-500">.well-known</span> endpoint.
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <div class="mt-6">
                     <a href="home.html" class="text-slate-400 hover:text-slate-600 text-sm font-medium underline">Back
@@ -50,7 +92,11 @@
                     <div class="flex items-center gap-6">
                         <div id="orgLogoPlaceholder"
                             class="bg-blue-500 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg">
-                            OCD
+                            <div class="flex-shrink-0">
+                                <img src="images/logo_ocd_viewer.png" alt="OCD Viewer Logo"
+                                    class="w-16 h-16 object-contain">
+                            </div>
+
                         </div>
                         <div>
                             <h1 id="headerTitle" class="text-3xl font-black tracking-tight uppercase">Organization Name
@@ -75,7 +121,7 @@
             <main class="max-w-7xl mx-auto py-12 px-6">
                 <div class="flex flex-col lg:flex-row gap-6 justify-between items-center mb-12">
                     <div class="relative w-full lg:w-96">
-                        <i class="fas fa-search absolute left-4 top-[1.1rem] text-slate-400"></i>
+
                         <input type="text" id="searchInput" placeholder="Search projects, datasets, standards..."
                             class="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
                     </div>

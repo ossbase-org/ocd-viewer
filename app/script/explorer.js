@@ -140,3 +140,83 @@
 
     function closePanel() { sidePanel.classList.add('translate-x-full'); }
     searchInput.addEventListener('input', renderCards);
+
+
+
+
+function toggleUrlCollapse() {
+    const collapse = document.getElementById('urlCollapse');
+    if (collapse.classList.contains('hidden')) {
+        collapse.classList.remove('hidden');
+        collapse.style.opacity = "0";
+        setTimeout(() => { collapse.style.opacity = "1"; }, 10);
+        document.getElementById('remoteUrlInput').focus();
+    } else {
+        collapse.classList.add('hidden');
+    }
+}
+
+
+function showUrlError(message) {
+    const errorDiv = document.getElementById('urlError');
+    const errorText = document.getElementById('urlErrorText');
+    errorText.textContent = message;
+    errorDiv.classList.remove('hidden');
+    
+
+    setTimeout(() => { errorDiv.classList.add('hidden'); }, 5000);
+}
+
+
+async function fetchRemoteData() {
+    const urlInput = document.getElementById('remoteUrlInput');
+    let url = urlInput.value.trim();
+
+    if (url && !url.startsWith('http')) {
+        url = 'https://' + url;
+        urlInput.value = url; 
+    }
+
+    const btn = event.currentTarget;
+    const errorDiv = document.getElementById('urlError');
+    errorDiv.classList.add('hidden');
+
+    if (!url) {
+        showUrlError("Please enter a URL.");
+        return;
+    }
+
+    const isValidFormat = url.toLowerCase().endsWith('.json') || url.toLowerCase().includes('.well-known');
+    if (!isValidFormat) {
+        showUrlError("The URL must point to a .json file or a .well-known endpoint.");
+        return;
+    }
+
+
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    btn.classList.add('opacity-50', 'pointer-events-none');
+
+    try {
+
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        
+        const response = await fetch(proxyUrl);
+        
+        if (!response.ok) {
+            throw new Error(`Target site unreachable (Status ${response.status})`);
+        }
+
+        const ocd = await response.json();
+        
+        // Success
+        processOCD(ocd);
+        document.getElementById('urlCollapse').classList.add('hidden');
+
+    } catch (err) {
+        showUrlError(err.message || "Failed to fetch data.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+    }
+}
