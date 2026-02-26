@@ -1,0 +1,129 @@
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.ocd-card:hover .copy-btn {
+    opacity: 1;
+}
+/**/
+
+
+
+
+ .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hover-scale {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-scale:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+  
+
+/**/
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.card-item {
+    position: relative;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem !important;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    transition: all 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: white;
+
+}
+
+.tab-error {
+    border: 2px solid #ef4444 !important;
+    animation: shake 0.5s;
+}
+
+
+
+/* Animation Error */
+.tab-error {
+    border: 2px solid #ef4444 !important;
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.contact-group-error {
+border: 2px solid #ef4444 !important;
+background-color: #fef2f2 !important;
+}
+.contact-group-error .error-msg {
+display: block !important;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}

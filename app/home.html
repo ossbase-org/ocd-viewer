@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCD Toolkit | Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900 overflow-x-hidden flex flex-col">
+    <div class="flex-grow">
+        <div class="max-w-6xl mx-auto px-6 py-20">
+            <header class="text-center mb-16 animate-fade-in flex flex-col items-center">
+                <div class="flex flex-col items-center mb-6">
+                    <img src="images/logo_ocd_viewer.png" alt="Logo" class="w-16 h-16 mb-2">
+                    <span class="text-xl font-black tracking-tighter text-slate-900 uppercase">
+                        OCD <span class="text-blue-600">Viewer</span>
+                    </span>
+                </div>
+
+                <h1 class="text-5xl md:text-6xl font-black tracking-tighter text-slate-900">
+                    Manage your <span class="text-blue-600">Open Ecosystem.</span>
+                </h1>
+            </header>
+
+            <div class="grid md:grid-cols-2 gap-10">
+
+                <a href="explorer.html" class="hover-scale group">
+                    <div
+                        class="glass-card p-12 rounded-[3.5rem] shadow-xl border border-white h-full flex flex-col items-center text-center">
+                        <div
+                            class="w-24 h-24 bg-slate-900 text-white rounded-3xl flex items-center justify-center text-4xl mb-8 group-hover:rotate-6 transition-transform">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold mb-4">OCD Explorer</h2>
+                        <p class="text-slate-500 mb-8 leading-relaxed">
+                            Visualize existing JSON files in a beautiful, searchable dashboard.
+                            Perfect for sharing your organization's impact with stakeholders.
+                        </p>
+                        <span
+                            class="mt-auto inline-flex items-center gap-2 text-blue-600 font-black uppercase text-sm tracking-wider">
+                            Open Viewer <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+
+                <a href="factory.html" class="hover-scale group">
+                    <div
+                        class="bg-blue-600 p-12 rounded-[3.5rem] shadow-blue-200 shadow-2xl h-full flex flex-col items-center text-center text-white">
+                        <div
+                            class="w-24 h-24 bg-white text-blue-600 rounded-3xl flex items-center justify-center text-4xl mb-8 group-hover:-rotate-6 transition-transform">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold mb-4">OCD Factory</h2>
+                        <p class="text-blue-100 mb-8 leading-relaxed">
+                            Don't have a file yet? Use our guided form to generate a valid
+                            Open Contributions Descriptor without touching a single line of code.
+                        </p>
+                        <span
+                            class="mt-auto inline-flex items-center gap-2 text-white font-black uppercase text-sm tracking-wider">
+                            Launch Creator <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </div>
+    <footer class="mt-20 border-t border-slate-200 bg-white/50 backdrop-blur-md pt-16 ">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-certificate text-white text-xs"></i>
+                        </div>
+                        <span class="text-xl font-black tracking-tighter text-slate-900">OSSBASE<span
+                                class="text-blue-600">.ORG</span></span>
+                    </div>
+                    <p class="text-slate-500 text-sm leading-relaxed">
+                        Dedicated to securing and supporting open-source security software, fostering growth and
+                        sustainable
+                        development for the global ecosystem.
+                    </p>
+                    <div class="flex items-center gap-4 text-slate-400 text-xs font-bold">
+                        <span class="flex items-center gap-1"><i class="fas fa-map-marker-alt"></i> LUXEMBOURG</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <h4 class="text-slate-900 font-bold text-sm uppercase tracking-widest">Resources</h4>
+                    <nav class="flex flex-col gap-2">
+                        <a href="https://ossbase.org/" target="_blank"
+                            class="text-slate-500 hover:text-blue-600 text-sm transition-colors flex items-center gap-2">
+                            <i class="fas fa-globe w-4"></i> Official Website
+                        </a>
+                        <a href="https://github.com/ossbase-org/ocd-viewer.git" target="_blank"
+                            class="text-slate-500 hover:text-blue-600 text-sm transition-colors flex items-center gap-2">
+                            <i class="fab fa-github w-4"></i> OCD Viewer Repository
+                        </a>
+                        <a href="https://github.com/ossbase-org" target="_blank"
+                            class="text-slate-500 hover:text-blue-600 text-sm transition-colors flex items-center gap-2">
+                            <i class="fas fa-shield-alt w-4"></i> Security Tools
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="bg-slate-900 rounded-3xl p-6 text-white relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <h4 class="font-bold mb-2">Join the Ecosystem</h4>
+                        <p class="text-slate-400 text-xs mb-4">The OCD Factory and Viewer are open-source. Contributions
+                            are
+                            welcome!</p>
+                        <a href="https://github.com/ossbase-org/ocd-viewer.git" target="_blank"
+                            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-4 py-2 rounded-xl transition-all">
+                            <i class="fab fa-github text-sm"></i> CONTRIBUTE
+                        </a>
+                    </div>
+
+                    <i
+                        class="fab fa-github absolute -right-4 -bottom-4 text-8xl text-white/5 rotate-12 group-hover:scale-110 transition-transform"></i>
+                </div>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+                    &copy; 2026 OSSBASE.ORG - Open Source Community
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+
+</html>

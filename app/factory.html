@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCD Factory | Full Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- SCRIPTS structures -->
+
+    <!-- FACTORY -->
+    <script src="script/factory.js"></script>
+
+    <!-- factory_utils -->
+    <script src="script/factory_utils/customs_fields.js"></script>
+    <script src="script/factory_utils/utils.js"></script>
+    <!-- factory_utils/modules -->
+
+    <script src="script/factory_utils/modules/add_project.js"></script>
+    <script src="script/factory_utils/modules/add_standards.js"></script>
+    <script src="script/factory_utils/modules/add_open_data.js"></script>
+</head>
+
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900 overflow-x-hidden flex flex-col">
+    <div class="flex-grow">
+        <!-- UP button -->
+        <div id="up-button" class="fixed bottom-10 right-10 opacity-0 invisible transition-all duration-300 z-50">
+            <a href="#top" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"
+                class="bg-blue-600 text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-lg hover:bg-blue-700 hover:-translate-y-1 transition-all">
+                <i class="fas fa-arrow-up"></i>
+            </a>
+        </div>
+        <!-- ACTIONS -->
+        <div class="max-w-[80%] mx-auto py-10 px-6">
+            <div class="flex flex-col gap-8 mb-10">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                    <div class="flex items-center gap-6">
+                        <div class="flex-shrink-0">
+                            <img src="images/logo_ocd_viewer.png" alt="OCD Viewer Logo"
+                                class="w-16 h-16 object-contain">
+                        </div>
+
+                        <div>
+                            <h1 class="text-4xl font-black text-slate-900 tracking-tight">
+                                OCD <span class="text-blue-600">Factory</span>
+                            </h1>
+                            <p class="text-slate-500 font-medium">
+                                Generate a schema-compliant Open Contributions Descriptor
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <a href="home.html"
+                            class="px-6 py-3.5 text-white font-bold text-sm transition-all flex items-center gap-2 bg-slate-600 hover:bg-slate-700 rounded-2xl shadow-lg">
+                            <i class="fas fa-home"></i> <span>HOME</span>
+                        </a>
+
+                        <button onclick="exportJSON()"
+                            class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3.5 rounded-2xl font-black shadow-lg shadow-emerald-100 transition-all flex items-center gap-2 active:scale-95">
+                            <i class="fas fa-file-download"></i> EXPORT JSON
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    class="flex flex-col sm:flex-row justify-between items-center py-6 border-y border-slate-200 gap-4">
+                    <button onclick="clearJSON()"
+                        class="bg-white border border-slate-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-slate-500 px-6 py-3.5 rounded-2xl font-bold transition-all flex items-center gap-2 group">
+                        <i class="fas fa-trash-alt text-xs group-hover:shake"></i> <span>RESET FORM</span>
+                    </button>
+
+                    <div id="import-group"
+                        class="flex items-center bg-slate-800 rounded-2xl p-1.5 shadow-xl transition-all">
+                        <button onclick="openPasteModal()"
+                            class="px-5 py-2.5  text-white hover:text-blue-300 font-bold text-sm transition-all flex items-center gap-2 rounded-xl hover:bg-slate-700">
+                            <i class="fas fa-paste"></i> PASTE JSON
+                        </button>
+
+                        <div class="w-px h-6 bg-slate-700 mx-1"></div>
+
+                        <input type="file" id="import-json" class="hidden" accept=".json" onchange="importJSON(event)">
+
+                        <button id="import-label" onclick="document.getElementById('import-json').click()"
+                            class="px-5 py-2.5 text-white  font-bold text-sm transition-all flex items-center gap-2 hover:text-blue-300 hover:bg-slate-700 rounded-xl">
+                            <i class="fas fa-file-upload"></i> <span id="import-text">IMPORT FILE<span><i
+                                        class="fas fa-plus text-xs opacity-50 pl-1"></i></span></span>
+                        </button>
+
+                        <button id="import-add-more" onclick="document.getElementById('import-json').click()"
+                            class="hidden px-4 py-2.5 text-white/70 hover:text-white transition-all"
+                            title="Load another file">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[750px] border border-slate-100">
+                <!-- SIDEBAR -->
+                <div class="w-full md:w-72 bg-slate-900 p-6 flex flex-col gap-2">
+                    <button onclick="showTab('tab-org')" id="btn-tab-org"
+                        class="nav-btn active w-full text-left p-4 rounded-2xl bg-blue-600 text-white font-bold text-sm transition-all">
+                        <i class="fas fa-building mr-3 opacity-50"></i> Organization
+                    </button>
+                    <button onclick="showTab('tab-contacts')" id="btn-tab-contacts"
+                        class="nav-btn w-full text-left p-4 rounded-2xl text-slate-400 hover:bg-white/5 font-bold text-sm transition-all">
+                        <i class=" fas fa-phone-square-alt mr-3 opacity-50"></i> Contacts
+                    </button>
+                    <button onclick="showTab('tab-policy')" id="btn-tab-policy"
+                        class="nav-btn w-full text-left p-4 rounded-2xl text-slate-400 hover:bg-white/5 font-bold text-sm transition-all">
+                        <i class=" fas fa-file mr-3 opacity-50"></i> Policy
+                    </button>
+                    <button onclick="showTab('tab-projects')" id="btn-tab-projects"
+                        class="nav-btn w-full text-left p-4 rounded-2xl text-slate-400 hover:bg-white/5 font-bold text-sm transition-all">
+                        <i class="fas fa-code mr-3 opacity-50"></i> Projects
+                    </button>
+                    <button onclick="showTab('tab-data')" id="btn-tab-data"
+                        class="nav-btn w-full text-left p-4 rounded-2xl text-slate-400 hover:bg-white/5 font-bold text-sm transition-all">
+                        <i class="fas fa-database mr-3 opacity-50"></i> Open Data
+                    </button>
+                    <button onclick="showTab('tab-standards')" id="btn-tab-standards"
+                        class="nav-btn w-full text-left p-4 rounded-2xl text-slate-400 hover:bg-white/5 font-bold text-sm transition-all">
+                        <i class="fas fa-gavel mr-3 opacity-50"></i> Standards
+                    </button>
+                </div>
+                <!-- CONTENT -->
+                <div class="flex-grow p-10 overflow-y-auto bg-slate-50/30 custom-scrollbar">
+                    <form id="ocd-form" onsubmit="return false;">
+                        <!-- Organization Tab -->
+                        <div id="tab-org" class="tab-content active">
+                            <h2 class="text-2xl font-bold mb-6 text-slate-800">Organization Identity</h2>
+
+                            <div id="group-org" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                <div class="md:col-span-2">
+                                    <label>Official Name <span style="color: red;">*</span></label>
+                                    <input type="text" id="org-name" minlength="1" required>
+                                </div>
+
+                                <div>
+                                    <label>Domain <span style="color: red;">*</span></label>
+                                    <input type="text" id="org-domain" placeholder="example.org" minlength="2" required>
+                                </div>
+
+                                <div>
+                                    <label>Country (ISO Code)</label>
+                                    <select id="org-country"
+                                        class="bg-f8fafc border border-e2e8f0 rounded-lg p-3 w-full">
+                                        <option value="">Select a country...</option>
+                                    </select>
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label>Description</label>
+                                    <textarea id="org-desc" rows="2"></textarea>
+                                </div>
+
+                                <div class="md:col-span-2 border-t pt-6 mt-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Links
+                                        </h3>
+                                        <button type="button" onclick="toggleCustomForm('org')"
+                                            class="text-blue-600 hover:text-blue-800 text-[10px] font-bold uppercase">
+                                            <i class="fas fa-plus-circle"></i> Add Link
+                                        </button>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label>Homepage</label>
+                                            <input type="url" id="org-link-home" placeholder="https://example.org">
+                                        </div>
+                                        <div>
+                                            <label>Open Source Page</label>
+                                            <input type="url" id="org-link-os"
+                                                placeholder="https://opensource.example.org">
+                                        </div>
+                                        <div>
+                                            <label>GitHub Org URL</label>
+                                            <input type="url" id="org-link-github"
+                                                placeholder="https://github.com/orgname">
+                                        </div>
+                                    </div>
+
+                                    <div id="custom-form-org"
+                                        class="hidden mt-4 p-4 bg-white rounded-xl border border-dashed border-slate-300 animate-fadeIn">
+                                        <div class="flex gap-2">
+                                            <input type="text" placeholder="Key (ex: linkedin)"
+                                                class="custom-key-link-org text-xs p-2 rounded-lg border w-1/3">
+                                            <input type="text" placeholder="Value (URL)"
+                                                class="custom-val-link-org text-xs p-2 rounded-lg border flex-grow">
+                                            <button type="button" onclick="addCustomField('org', 'link')"
+                                                class="bg-slate-800 text-white px-4 rounded-lg">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="custom-container-link-org"
+                                        class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    </div>
+                                </div>
+                                <div class="md:col-span-2 border-t pt-6 mt-4" id="group-org-attr">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Other
+                                            Identifiers / Custom Attributes</h3>
+                                        <button type="button" onclick="toggleCustomForm('org-attr')"
+                                            class="text-blue-600 hover:text-blue-800 text-[10px] font-bold uppercase">
+                                            <i class="fas fa-plus-circle"></i> Add Attribute
+                                        </button>
+                                    </div>
+
+                                    <div id="custom-form-org-attr"
+                                        class="hidden mt-4 p-4 bg-white rounded-xl border border-dashed border-slate-300 animate-fadeIn">
+                                        <div class="flex gap-2">
+                                            <input type="text" placeholder="Key (ex: vat_number)"
+                                                class="custom-key-link-org-attr text-xs p-2 rounded-lg border w-1/3">
+                                            <input type="text" placeholder="Value"
+                                                class="custom-val-link-org-attr text-xs p-2 rounded-lg border flex-grow">
+                                            <button type="button" onclick="addCustomField('org-attr', 'link')"
+                                                class="bg-slate-800 text-white px-4 rounded-lg">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="custom-container-link-org-attr"
+                                        class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Contacts Tab -->
+                        <div id="tab-contacts" class="tab-content">
+                            <h2 class="text-2xl font-bold mb-6 text-slate-800">Contacts</h2>
+
+                            <div id="contact-groups-list" class="space-y-8">
+
+                                <div class="contact-group p-6 bg-slate-100/50 rounded-2xl border border-slate-200 transition-all"
+                                    id="group-os">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="font-bold uppercase text-xs tracking-wider"><i
+                                                class="fas fa-code-branch mr-2"></i>Open Source</h3>
+                                        <button type="button" onclick="toggleCustomForm('os')"
+                                            class="text-blue-600 hover:text-blue-800 text-xs font-bold uppercase"><i
+                                                class="fas fa-plus-circle"></i> Add Field</button>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div><label>Email</label><input type="email" id="contact-os-email"
+                                                placeholder="ospo@example.org"></div>
+                                        <div><label>URL (URI)</label><input type="url" id="contact-os-url"
+                                                placeholder="https://support.example.org"></div>
+                                    </div>
+                                    <div id="custom-form-os"
+                                        class="hidden mt-4 p-4 bg-white rounded-xl border border-dashed border-slate-300 animate-fadeIn">
+                                        <div class="flex gap-2">
+                                            <input type="text" placeholder="Key (ex: mastodon)"
+                                                class="custom-key-link-os text-xs p-2 rounded-lg border w-1/3">
+
+                                            <input type="text" placeholder="Value"
+                                                class="custom-val-link-os text-xs p-2 rounded-lg border flex-grow">
+
+                                            <button type="button" onclick="addCustomField('os', 'contact')"
+                                                class="bg-slate-800 text-white px-3 rounded-lg">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="custom-container-link-os"
+                                        class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    </div>
+                                </div>
+
+                                <div class="contact-group p-6 bg-slate-100/50 rounded-2xl border border-slate-200 transition-all"
+                                    id="group-sec">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="font-bold uppercase text-xs tracking-wider"><i
+                                                class="fas fa-shield-alt mr-2"></i>Security</h3>
+                                        <button type="button" onclick="toggleCustomForm('sec')"
+                                            class="text-blue-600 hover:text-blue-800 text-xs font-bold uppercase"><i
+                                                class="fas fa-plus-circle"></i> Add Field</button>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div><label>Email</label><input type="email" id="contact-sec-email"
+                                                placeholder="security@example.org"></div>
+                                        <div><label>URL (URI)</label><input type="url" id="contact-sec-url"
+                                                placeholder="https://example.org/security"></div>
+                                    </div>
+                                    <div id="custom-form-sec"
+                                        class="hidden mt-4 p-4 bg-white rounded-xl border border-dashed border-slate-300 animate-fadeIn">
+                                        <div class="flex gap-2">
+                                            <input type="text" placeholder="Key"
+                                                class="custom-key-sec text-xs p-2 rounded-lg border w-1/3">
+                                            <input type="text" placeholder="Value"
+                                                class="custom-val-sec text-xs p-2 rounded-lg border flex-grow">
+                                            <button type="button" onclick="addCustomField('sec', 'contact')"
+                                                class="bg-slate-800 text-white px-3 rounded-lg"><i
+                                                    class="fas fa-check"></i></button>
+                                        </div>
+                                    </div>
+                                    <div id="custom-container-link-sec"
+                                        class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    </div>
+                                </div>
+
+                                <div class="contact-group p-6 bg-slate-100/50 rounded-2xl border border-slate-200 transition-all"
+                                    id="group-com">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="font-bold uppercase text-xs tracking-wider"><i
+                                                class="fas fa-users mr-2"></i>Community</h3>
+                                        <button type="button" onclick="toggleCustomForm('com')"
+                                            class="text-blue-600 hover:text-blue-800 text-xs font-bold uppercase"><i
+                                                class="fas fa-plus-circle"></i> Add Field</button>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div><label>Email</label><input type="email" id="contact-com-email"
+                                                placeholder="community@example.org"></div>
+                                        <div><label>URL (URI)</label><input type="url" id="contact-com-url"
+                                                placeholder="https://discord.gg/example"></div>
+                                    </div>
+                                    <div id="custom-form-com"
+                                        class="hidden mt-4 p-4 bg-white rounded-xl border border-dashed border-slate-300 animate-fadeIn">
+                                        <div class="flex gap-2">
+                                            <input type="text" placeholder="Key"
+                                                class="custom-key-com text-xs p-2 rounded-lg border w-1/3">
+                                            <input type="text" placeholder="Value"
+                                                class="custom-val-com text-xs p-2 rounded-lg border flex-grow">
+                                            <button type="button" onclick="addCustomField('com', 'contact')"
+                                                class="bg-slate-800 text-white px-3 rounded-lg"><i
+                                                    class="fas fa-check"></i></button>
+                                        </div>
+                                    </div>
+                                    <div id="custom-container-link-com"
+                                        class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" onclick="addNewContactGroup()"
+                                class="w-full mt-6 py-4 border-2 border-dashed border-slate-300 rounded-2xl text-slate-500 font-bold hover:bg-slate-100 transition-all">
+                                <i class="fas fa-plus mr-2"></i> ADD NEW CONTACT CATEGORY
+                            </button>
+                        </div>
+                        <!-- Policies Tab -->
+                        <div id="tab-policy" class="tab-content">
+                            <h2 class="text-2xl font-bold mb-6 text-slate-800">Policies</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label>Code of Conduct</label>
+                                    <input type="url" id="policy-coc" placeholder="https://example.org/coc"
+                                        pattern="https?://.*" minlength="1">
+                                </div>
+                                <div>
+                                    <label>Contributing Guide</label>
+                                    <input type="url" id="policy-contrib" placeholder="https://example.org/contributing"
+                                        pattern="https?://.*" minlength="1">
+                                </div>
+                                <div>
+                                    <label>Vulnerability Disclosure (VDP)</label>
+                                    <input type="url" id="policy-vdp" placeholder="https://example.org/security"
+                                        pattern="https?://.*" minlength="1">
+                                </div>
+                                <div>
+                                    <label>License Policy</label>
+                                    <input type="url" id="policy-license" placeholder="https://example.org/licenses"
+                                        pattern="https?://.*" minlength="1">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 border-t pt-6 mt-4" id="group-policy-attr">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Other
+                                        Identifiers / Custom Attributes</h3>
+                                    <button type="button" onclick="toggleCustomForm('policy-attr')"
+                                        class="text-blue-600 hover:text-blue-800 text-[10px] font-bold uppercase">
+                                        <i class="fas fa-plus-circle"></i> Add Attribute
+                                    </button>
+                                </div>
+
+                                <div id="custom-form-policy-attr"
+                                    class="hidden mt-4 p-4 bg-white rounded-xl border border-dashed border-slate-300 animate-fadeIn">
+                                    <div class="flex gap-2">
+                                        <input type="text" placeholder="Key (ex: vat_number)"
+                                            class="custom-key-policy-attr text-xs p-2 rounded-lg border w-1/3">
+                                        <input type="text" placeholder="Value"
+                                            class="custom-val-policy-attr text-xs p-2 rounded-lg border flex-grow">
+                                        <button type="button" onclick="addCustomField('policy-attr', 'policy')"
+                                            class="bg-slate-800 text-white px-4 rounded-lg">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="custom-container-policy-attr"
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"></div>
+                            </div>
+                        </div>
+                        <!-- Projects Tab -->
+                        <div id="tab-projects" class="tab-content">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold text-slate-800">Software Projects</h2>
+                                <button type="button" onclick="addProject()"
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-all">+
+                                    Add Project</button>
+                            </div>
+                            <div id="project-list" class="space-y-6"></div>
+                        </div>
+                        <!-- Data Tab -->
+                        <div id="tab-data" class="tab-content">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold text-slate-800">Open Data</h2>
+                                <button type="button" onclick="addData()"
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-all">+
+                                    Add Dataset</button>
+                            </div>
+                            <div id="data-list" class="space-y-6"></div>
+                        </div>
+
+                        <div id="tab-standards" class="tab-content">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold text-slate-800">Open Standards</h2>
+                                <button type="button" onclick="addStandard()"
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-all">+
+                                    Add Standard</button>
+                            </div>
+                            <div id="standards-list" class="space-y-6"></div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+        <div id="paste-modal"
+            class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+            <div class="bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden animate-fadeIn">
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">Paste OCD JSON</h3>
+                        <button onclick="closePasteModal()" class="text-slate-400 hover:text-slate-600"><i
+                                class="fas fa-times text-xl"></i></button>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-4 italic">Paste the raw JSON content below to populate the form.
+                    </p>
+                    <textarea id="raw-json-input" rows="12"
+                        class="w-full p-4 font-mono text-xs bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none"
+                        placeholder='{ "spec_version": "1.0", ... }'></textarea>
+
+                    <div class="flex gap-3 mt-6">
+                        <button onclick="processPastedJSON()"
+                            class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all">
+                            LOAD DATA
+                        </button>
+                        <button onclick="closePasteModal()"
+                            class="px-8 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-xl transition-all">
+                            CANCEL
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="mt-20 border-t border-slate-200 bg-white/50 backdrop-blur-md pt-16 ">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-certificate text-white text-xs"></i>
+                        </div>
+                        <span class="text-xl font-black tracking-tighter text-slate-900">OSSBASE<span
+                                class="text-blue-600">.ORG</span></span>
+                    </div>
+                    <p class="text-slate-500 text-sm leading-relaxed">
+                        Dedicated to securing and supporting open-source security software, fostering growth and
+                        sustainable
+                        development for the global ecosystem.
+                    </p>
+                    <div class="flex items-center gap-4 text-slate-400 text-xs font-bold">
+                        <span class="flex items-center gap-1"><i class="fas fa-map-marker-alt"></i> LUXEMBOURG</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <h4 class="text-slate-900 font-bold text-sm uppercase tracking-widest">Resources</h4>
+                    <nav class="flex flex-col gap-2">
+                        <a href="https://ossbase.org/" target="_blank"
+                            class="text-slate-500 hover:text-blue-600 text-sm transition-colors flex items-center gap-2">
+                            <i class="fas fa-globe w-4"></i> Official Website
+                        </a>
+                        <a href="https://github.com/ossbase-org/ocd-viewer.git" target="_blank"
+                            class="text-slate-500 hover:text-blue-600 text-sm transition-colors flex items-center gap-2">
+                            <i class="fab fa-github w-4"></i> OCD Viewer Repository
+                        </a>
+                        <a href="https://github.com/ossbase-org" target="_blank"
+                            class="text-slate-500 hover:text-blue-600 text-sm transition-colors flex items-center gap-2">
+                            <i class="fas fa-shield-alt w-4"></i> Security Tools
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="bg-slate-900 rounded-3xl p-6 text-white relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <h4 class="font-bold mb-2">Join the Ecosystem</h4>
+                        <p class="text-slate-400 text-xs mb-4">The OCD Factory and Viewer are open-source. Contributions
+                            are
+                            welcome!</p>
+                        <a href="https://github.com/ossbase-org/ocd-viewer.git" target="_blank"
+                            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-4 py-2 rounded-xl transition-all">
+                            <i class="fab fa-github text-sm"></i> CONTRIBUTE
+                        </a>
+                    </div>
+
+                    <i
+                        class="fab fa-github absolute -right-4 -bottom-4 text-8xl text-white/5 rotate-12 group-hover:scale-110 transition-transform"></i>
+                </div>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+                    &copy; 2026 OSSBASE.ORG - Open Source Community
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

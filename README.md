@@ -1,8 +1,8 @@
 # OCD Static Site Generator
 
-A simple and flexible static site generator that creates HTML websites from structured openness data.
+A simple and flexible static site generator that creates HTML websites from structured openness data. This tool transforms machine-readable metadata into a clean, human-readable website.
 
-This tool transforms machine-readable metadata into a clean, human-readable website.
+## Main Features
 
 ## Purpose
 
@@ -11,7 +11,7 @@ The goal of this project is to:
 - Generate fully static HTML pages
 - Aggregate multiple data sources
 - Convert structured JSON into a public website
-- Provide a transparent and automated view of organizational openness
+- Provide a transparent view of organizational openness
 
 The output is a deployable static website (no backend required).
 
@@ -25,13 +25,9 @@ The output is a deployable static website (no backend required).
 
 ### GitHub Repositories
 
-- Repository metadata
-- README content
-- License information
-- Releases
+- Repository metadata and README content
+- License and release information
 - Contribution files
-
-Multiple repositories can be combined into one generated site.
 
 ### OCD Endpoint
 
@@ -40,20 +36,16 @@ The generator can connect to an
 
 ## How It Works
 
-Input Sources (JSON / GitHub / OCD)
-↓
-Parser & Normalizer
-↓
-Internal Data Model
-↓
-Template Engine
-↓
-Static HTML Output
+1. Input Sources (JSON, GitHub, or OCD)
+2. Parser and Normalizer
+3. Internal Data Model
+4. Template Engine
+5. Static HTML Output
 
 ## What the Generated Website Can Include
 
 - Organization overview page
-- Project listings
+- Project listings and details
 - Dataset pages
 - Standards participation overview
 - Links to repositories and documentation
@@ -67,4 +59,3 @@ Static HTML Output
 - Additional data connectors can be implemented
 
 The system is designed to remain flexible and adaptable.
-
