@@ -2,6 +2,8 @@
 
 A simple and flexible static site generator that creates HTML websites from structured openness data. This tool transforms machine-readable metadata into a clean, human-readable website.
 
+- [https://ossbase-org.github.io/ocd-viewer/app/home.html](https://ossbase-org.github.io/ocd-viewer/app/home.html)
+
 ## Main Features
 
 ## Purpose
