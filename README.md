@@ -53,6 +53,12 @@ The generator can connect to an
 - Links to repositories and documentation
 - Machine-readable interface references
 
+## Graph view
+
+Once a descriptor is loaded in the explorer (file or remote URL), a **Cards / Graph** switch shows it either as cards or as a graph of the organization, its projects, open data, standards and relationships, drawn by [project-graph](https://github.com/ecrou-exact/project-graph) embedded in the page. The explorer sends the descriptor it already holds, so local files work too.
+
+For local development, point the explorer at another project-graph instance: `app/explorer.html?graph=http://localhost:5199/`.
+
 ## Extensibility
 
 - Custom fields can be mapped

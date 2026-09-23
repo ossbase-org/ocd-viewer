@@ -49,7 +49,7 @@
                         class="hidden w-full max-w-xl mt-4 overflow-hidden transition-all duration-300">
                         <div class="bg-slate-100 p-6 rounded-3xl border border-slate-200 flex flex-col gap-3">
                             <label
-                                class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">8.
+                                class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">
                                 Remote JSON Endpoint</label>
 
                             <div class="flex gap-2">
@@ -126,6 +126,15 @@
                             class="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
                     </div>
 
+                    <div id="viewSwitch" class="flex gap-2 bg-gray-200/50 p-1.5 rounded-2xl" role="tablist" aria-label="View">
+                        <button id="viewCardsBtn" onclick="showView('cards')" role="tab" aria-selected="true"
+                            class="view-btn bg-white text-slate-900 shadow-sm px-6 py-2 rounded-xl text-sm font-bold transition-all">
+                            <i class="fas fa-th-large mr-1"></i> Cards</button>
+                        <button id="viewGraphBtn" onclick="showView('graph')" role="tab" aria-selected="false"
+                            class="view-btn text-slate-500 hover:bg-white/50 px-6 py-2 rounded-xl text-sm font-bold transition-all">
+                            <i class="fas fa-project-diagram mr-1"></i> Graph</button>
+                    </div>
+
                     <div id="categoryFilters" class="flex gap-2 bg-gray-200/50 p-1.5 rounded-2xl">
                         <button onclick="filterType('all')"
                             class="filter-btn active bg-white text-slate-900 px-6 py-2 rounded-xl text-sm font-bold shadow-sm transition-all">All</button>
@@ -139,6 +148,18 @@
                 </div>
 
                 <div id="dataGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+                <!-- Graph view: Pivograph (project-graph) embedded, fed with the loaded descriptor. -->
+                <div id="graphView" class="hidden">
+                    <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+                        <div id="graphFrameHolder" class="w-full h-[75vh] min-h-[520px]"></div>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-3 text-center">
+                        Graph view by <a href="https://github.com/ecrou-exact/project-graph" target="_blank"
+                            class="text-blue-500 hover:underline">project-graph</a> — click a node for its details,
+                        use <span class="font-semibold">Filter Graph</span> or the side panel to filter by tag or type.
+                    </p>
+                </div>
             </main>
         </div>
 

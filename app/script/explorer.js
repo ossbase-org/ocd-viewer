@@ -27,6 +27,9 @@
     });
 
     function processOCD(ocd) {
+        currentOCD = ocd;
+        graphLoaded = false;
+        if (currentView === 'graph') sendToGraph();
         document.getElementById('headerTitle').textContent = ocd.organization?.name || "Organization";
         document.getElementById('headerSubtitle').textContent = ocd.organization?.description || ocd.organization?.domain || "";
 
@@ -220,3 +223,72 @@ async function fetchRemoteData() {
         btn.classList.remove('opacity-50', 'pointer-events-none');
     }
 }
+
+
+/**
+ * ###################
+ * #   Graph view    #
+ * ###################
+ * The loaded descriptor shown as a graph by project-graph (Pivograph), embedded
+ * in an iframe. The page sends it the descriptor it already holds, so a local
+ * file works as well as a remote one. For local development, point it at
+ * another instance with ?graph=http://localhost:5199/ in this page's URL.
+ **/
+const GRAPH_URL = new URLSearchParams(location.search).get('graph') || 'https://ecrou-exact.github.io/project-graph/';
+
+let currentOCD = null;
+let currentView = 'cards';
+let graphFrame = null;
+let graphReady = false;
+let graphLoaded = false;
+
+function showView(view) {
+    currentView = view;
+    const isGraph = view === 'graph';
+    document.getElementById('graphView').classList.toggle('hidden', !isGraph);
+    document.getElementById('dataGrid').classList.toggle('hidden', isGraph);
+    // Search and category filters belong to the cards; the graph has its own.
+    document.getElementById('categoryFilters').classList.toggle('invisible', isGraph);
+    document.getElementById('searchInput').parentElement.classList.toggle('invisible', isGraph);
+    [['cards', 'viewCardsBtn'], ['graph', 'viewGraphBtn']].forEach(([name, id]) => {
+        const btn = document.getElementById(id);
+        const active = name === view;
+        btn.setAttribute('aria-selected', String(active));
+        btn.classList.toggle('bg-white', active);
+        btn.classList.toggle('text-slate-900', active);
+        btn.classList.toggle('shadow-sm', active);
+        btn.classList.toggle('text-slate-500', !active);
+    });
+    if (isGraph) openGraph();
+}
+
+function openGraph() {
+    if (!graphFrame) {
+        graphFrame = document.createElement('iframe');
+        const url = new URL(GRAPH_URL);
+        url.searchParams.set('embed', '1');
+        graphFrame.src = url.toString();
+        graphFrame.title = 'Graph of the open contributions';
+        graphFrame.className = 'w-full h-full border-0';
+        document.getElementById('graphFrameHolder').appendChild(graphFrame);
+    }
+    sendToGraph();
+}
+
+function sendToGraph() {
+    if (!graphFrame || !graphReady || !currentOCD || graphLoaded) return;
+    graphFrame.contentWindow.postMessage({ type: 'pivograph:load', data: currentOCD, name: 'open-contributions.json' }, new URL(GRAPH_URL).origin);
+    graphLoaded = true;
+}
+
+window.addEventListener('message', (event) => {
+    // Only messages from our own graph iframe.
+    if (!graphFrame || event.source !== graphFrame.contentWindow) return;
+    if (event.data?.type === 'pivograph:ready') {
+        graphReady = true;
+        graphLoaded = false;
+        sendToGraph();
+    } else if (event.data?.type === 'pivograph:error') {
+        console.warn('Graph view:', event.data.message);
+    }
+});
