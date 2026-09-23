@@ -250,6 +250,16 @@ function showView(view) {
     // Search and category filters belong to the cards; the graph has its own.
     document.getElementById('categoryFilters').classList.toggle('invisible', isGraph);
     document.getElementById('searchInput').parentElement.classList.toggle('invisible', isGraph);
+    // The sticky header would cover the top of the graph when scrolling: let it scroll away.
+    document.querySelector('#mainContent > header').classList.toggle('sticky', !isGraph);
+    // The graph takes the whole width of the page; the cards keep their column.
+    const main = document.getElementById('explorerMain');
+    main.classList.toggle('max-w-7xl', !isGraph);
+    main.classList.toggle('max-w-none', isGraph);
+    main.classList.toggle('px-6', !isGraph);
+    main.classList.toggle('px-3', isGraph);
+    main.classList.toggle('py-12', !isGraph);
+    main.classList.toggle('py-4', isGraph);
     [['cards', 'viewCardsBtn'], ['graph', 'viewGraphBtn']].forEach(([name, id]) => {
         const btn = document.getElementById(id);
         const active = name === view;
@@ -270,6 +280,7 @@ function openGraph() {
         graphFrame.src = url.toString();
         graphFrame.title = 'Graph of the open contributions';
         graphFrame.className = 'w-full h-full border-0';
+        graphFrame.allow = 'fullscreen';
         document.getElementById('graphFrameHolder').appendChild(graphFrame);
     }
     sendToGraph();
@@ -291,4 +302,27 @@ window.addEventListener('message', (event) => {
     } else if (event.data?.type === 'pivograph:error') {
         console.warn('Graph view:', event.data.message);
     }
+});
+
+/** Full screen for the graph view (the box, so the button stays on top). */
+function toggleGraphFullscreen() {
+    const box = document.getElementById('graphBox');
+    if (document.fullscreenElement) document.exitFullscreen();
+    else box.requestFullscreen?.();
+}
+
+document.addEventListener('fullscreenchange', () => {
+    const full = document.fullscreenElement === document.getElementById('graphBox');
+    const box = document.getElementById('graphBox');
+    const holder = document.getElementById('graphFrameHolder');
+    box.classList.toggle('rounded-[2rem]', !full);
+    // In full screen the graph fills the screen under the bar (box is a flex column).
+    holder.classList.toggle('h-[calc(100vh-230px)]', !full);
+    holder.classList.toggle('min-h-[560px]', !full);
+    holder.classList.toggle('flex-1', full);
+    box.classList.toggle('h-screen', full);
+    const btn = document.getElementById('graphFullscreenBtn');
+    btn.innerHTML = full
+        ? '<i class="fas fa-compress"></i> <span>Exit full screen</span>'
+        : '<i class="fas fa-expand"></i> <span>Full screen</span>';
 });
